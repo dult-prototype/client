@@ -18,3 +18,4 @@ This is a CLI simulation of the DULT application which interacts with the unwant
 2. These details requested are returned back to the client in the form of the indications.
 3. The program provides 4 operations or types request - Start Sound, Stop Sound, Serial Number Lookup, and do nothing.
 4. By clicking on the desired operations, he/she can perform those operations on the server device.
+5. The program also provides the addec service of connecting to a decryption server which decrypts the encrypted serial number obtained in the serial number lookup and returns the results.
