@@ -1,3 +1,7 @@
+"""
+Contains all opcodes and response codes mentioned in the draft
+"""
+
 GET_PRODUCT_DATA = 0x306
 GET_MANUFACTURER_NAME = 0x307
 GET_MODEL_NAME = 0x308
@@ -19,7 +23,7 @@ COMMAND_RESPONSE = 0x302
 
 opcode_values_to_opcodes = {
     SOUND_START: 'Sound start',
-    SOUND_STOP : 'Sound stop',
+    SOUND_STOP: 'Sound stop',
     SOUND_COMPLETED: 'Sound completed'
 }
 

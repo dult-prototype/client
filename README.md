@@ -14,8 +14,19 @@ This is a CLI simulation of the DULT application which interacts with the unwant
 ### Functionality
 
 ![WhatsApp Image 2023-10-18 at 19 40 23](https://github.com/dult-prototype/client/assets/78913321/cd0940f9-489f-4c1d-bb88-e0b571d767aa)
-1. The program initially request the server for the Prouct Data, Manufacturer Name, Model Name, Accessory Category and Accessory Capability.
-2. These details requested are returned back to the client in the form of the indications.
-3. The program provides 4 operations or types request - Start Sound, Stop Sound, Serial Number Lookup, and do nothing.
-4. By clicking on the desired operations, he/she can perform those operations on the server device.
-5. The program also provides the addec service of connecting to a decryption server which decrypts the encrypted serial number obtained in the serial number lookup and returns the results.
+1. The program initially requests from the accessory (server) its Prouct Data, Manufacturer Name, Model Name, Accessory Category and Accessory Capability.
+2. These details requested are returned in the form of the indications and are displayed appropriately.
+3. Then, the program provides 3 choices
+    - Start sound - Starts playing sound on the accessory
+    - Stop sound - Stops playing sound on the accessory
+    - Get Serial Number - Fetches the serial number of the accessory
+        (assumed to be encrypted) and decrypts it by calling the decryption server
+
+### Note
+1. The results of operations (such as a success for sound start) might not be displayed immediately due to python not flushing the output.
+2. Another machine must be used to run the server.
+
+### Improvements
+1. Making a mobile app for the application would be more suitable
+
+
