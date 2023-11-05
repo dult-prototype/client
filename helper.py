@@ -3,7 +3,7 @@ import opcodes
 import http.client
 
 # URL and port number of the serial number decryption server
-SERVER_URL = "localhost"
+SERVER_URL = "http://localhost"
 PORT = 8080
 
 accessory_capabilities = [
@@ -79,23 +79,13 @@ def command_response_handler(response: bytearray) -> str:
 
 def serial_number_handler(response: bytearray) -> str:
     """
-    Queries the decryption server with the serial number fetched
-    from the accessory for decryption
-    Prints the decrypted serial number
+    Returns the URL of server for decrypting the serial number
+    and fetching owner information
     """
     encrypted_serial_number = response.decode()
+    url = f"{SERVER_URL}:{PORT}/serial-number-decrypt?serial-number={encrypted_serial_number}"
+    return url
 
-    conn = http.client.HTTPConnection(SERVER_URL, PORT)
-    path = f"/decrypt?serial_number={encrypted_serial_number}"
-    conn.request("GET", path)
-
-    response = conn.getresponse()
-    if response.status == 200:
-        decrypted_serial_number = response.read().decode()
-        print(f"Decrypted Serial Number: {decrypted_serial_number}")
-        return decrypted_serial_number
-    else:
-        return f"Error: {response.status} - {response.reason}"
 
 # Callback methods for different opcodes
 callbacks = {
