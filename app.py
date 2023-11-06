@@ -27,7 +27,7 @@ def indication_handler(characteristic: BleakGATTCharacteristic, data: bytearray)
     3. Get Serial Number Response
     """
 
-    opcode = int.from_bytes(data[:2], 'little')
+    opcode = int.from_bytes(data[:2], 'big')
     data = data[2:]
     if opcode in helper.accessory_information:
         data = data.decode()
@@ -98,7 +98,7 @@ async def main():
                 try:
                     print("Fetching accessory information..")
                     for opcode in [opcodes.GET_PRODUCT_DATA, opcodes.GET_MANUFACTURER_NAME, opcodes.GET_MODEL_NAME, opcodes.GET_ACCESSORY_CATEGORY, opcodes.GET_ACCESSORY_CAPABILITIES]:
-                        opcode_in_bytes = opcode.to_bytes(2, 'little')
+                        opcode_in_bytes = opcode.to_bytes(2, 'big')
                         await client.write_gatt_char(UUID, opcode_in_bytes, response=True)
 
                     while True:
@@ -110,15 +110,15 @@ async def main():
                         try:
                             if inp == "1":
                                 opcode_in_bytes = opcodes.SOUND_START.to_bytes(
-                                    2, 'little')
+                                    2, 'big')
                                 await client.write_gatt_char(UUID, opcode_in_bytes, response=True)
                             elif inp == "2":
                                 opcode_in_bytes = opcodes.SOUND_STOP.to_bytes(
-                                    2, 'little')
+                                    2, 'big')
                                 await client.write_gatt_char(UUID, opcode_in_bytes, response=True)
                             elif inp == "3":
                                 opcode_in_bytes = opcodes.GET_SERIAL_NUMBER.to_bytes(
-                                    2, 'little')
+                                    2, 'big')
                                 await client.write_gatt_char(UUID, opcode_in_bytes, response=True)
                             elif inp == "4":
                                 raise KeyboardInterrupt

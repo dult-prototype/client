@@ -73,9 +73,8 @@ def command_response_handler(response: bytearray) -> str:
     Returns the command which invoked this response and the response status
     In the format "Command: Response Status"
     """
-    command_opcode = int.from_bytes(response[:2], 'little')
-    response_status = int.from_bytes(response[2: 4], 'little')
-    # print(command_opcode, response_status)
+    command_opcode = int.from_bytes(response[:2], 'big')
+    response_status = int.from_bytes(response[2: 4], 'big')
     return opcodes.opcode_values_to_opcodes[command_opcode] + ': ' + opcodes.response_status_mappings[response_status]
 
 
