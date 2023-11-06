@@ -2,7 +2,9 @@
 import opcodes
 import http.client
 
-# URL and port number of the serial number decryption server
+# URL and port number of the tracking network server
+# TODO - Determine the url from the accessory itself instead
+# of a hard coded value
 SERVER_URL = "http://localhost"
 PORT = 8080
 

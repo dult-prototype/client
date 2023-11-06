@@ -129,8 +129,8 @@ async def main():
                     print("Disconnecting and exiting program")
                     await client.disconnect()
                     exit(0)
-        except BleakError as bleakError:
-            print(f"ERROR: Could not connect to {address}, {bleakError}")
+        except Exception as e:
+            print(f"ERROR: Could not connect to {address}, {e}")
             print(f"Do you want to retry connecting to {address} (y/n)?")
             choice = input()
             if choice != "y":
