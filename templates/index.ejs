@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tracker Detection</title>
+    <link rel="icon" href="static/favicon.png">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        #content {
+            margin-top: 20px;
+        }
+        /* ... Previous CSS ... */
+        .chat-content {
+            background-color: #2b2b2b;
+            color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            font-size: 10px;
+            text-align: left;
+            font-family: 'Arial', sans-serif;
+            min-height: 100px; 
+        }
+        .chat-content p {
+            margin: 0;
+            padding: 5px;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+        /* Add CSS to style the chat bubble effect */
+        .chat-bubble {
+            background-color: #007bff;
+            border-radius: 8px;
+            padding: 10px;
+            display: inline-block;
+            max-width: 80%;
+        }
+
+        /* Style user's messages differently (optional) */
+        .user-message {
+            background-color: #4CAF50;
+        }
+        /* ... Rest of your CSS ... */
+        #searchInput {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        #start {
+            background-color: #ff9d00;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        #searchButton {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Scanning Bluetooth Devices</h1>
+        <div>
+            <button id="start"><b>Start<b></button>
+            <button id="searchButton"><b>Search<b></button>
+            <input type="number" id="searchInput" placeholder="Enter a device index">
+        </div>
+        <div id="top_container" class="chat-content">
+        </div>
+    </div>
+    <br>
+    <div class="container">
+        <h1>Bluetooth Operations</h1>
+        <div>
+            <button id="button1"><b>Sound Start<b></button>
+            <button id="button2"><b>Sound Stop<b></button>
+            <button id="button3"><b>Serial Number Lookup<b></button>
+            <button id="button4"><b>Clear<b></button>
+        </div>
+        <div id="content" class="chat-content">
+            <!-- Content will be updated dynamically -->
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    document.getElementById('button1').addEventListener('click', () => {
+        handleButtonClick('button1');
+    });
+
+    document.getElementById('button2').addEventListener('click', () => {
+        handleButtonClick('button2');
+    });
+
+    document.getElementById('button3').addEventListener('click', () => {
+        handleButtonClick('button3');
+    });
+
+    document.getElementById('button4').addEventListener('click', () => {
+        handleButtonClick('button4');
+    });
+
+    document.getElementById('start').addEventListener('click', () => {
+        handleStartClick();
+    });
+
+    async function handleStartClick() {
+        try {
+            document.getElementById('top_container').innerHTML = 'Scanning for devices...<br><br>';
+            const response = await fetch('/start', {
+                method: 'POST',
+                body: new URLSearchParams({}),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            document.getElementById('top_container').innerHTML += data.data;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function handleButtonClick(buttonId) {
+        try {
+            document.getElementById('content').innerHTML = 'Requesting data...<br><br>';
+            const response = await fetch('/button_click', {
+                method: 'POST',
+                body: new URLSearchParams({'button_id': buttonId}),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json(); 
+            document.getElementById('content').innerHTML = data.data;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Handle the search button click
+    document.getElementById('searchButton').addEventListener('click', async () => {
+        document.getElementById('top_container').innerHTML += '<br>Trying to connect...<br><br>';
+        const numberInput = document.getElementById('searchInput').value;
+        if (!isNaN(numberInput)) {
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    body: new URLSearchParams({ 'number': numberInput }),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                document.getElementById('top_container').innerHTML += data.data;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    });
+</script>
