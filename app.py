@@ -18,6 +18,10 @@ application with the following capabilities
 UUID = '00000090-0100-0000-0000-000000000000'
 indication = ['']
 
+from threading import Thread, Lock
+
+mutex = Lock()
+
 def indication_handler(characteristic: BleakGATTCharacteristic, data: bytearray):
     """
     Method to handle indications from the accessory
@@ -26,22 +30,25 @@ def indication_handler(characteristic: BleakGATTCharacteristic, data: bytearray)
     2. Command Response (during sound start, stop operations)
     3. Get Serial Number Response
     """
-    indication[0] = ''
+    # indication[0] = ''
     value = ''
     opcode = int.from_bytes(data[:2], 'big')
     data = data[2:]
     if opcode in helper.accessory_information:
         data = data.decode()
-        value = helper.callbacks[opcode](data)
+        # value = helper.callbacks[opcode](data)
+
         try:
-            value += f'[INDICATION] {helper.accessory_information[opcode]}: {value}<br><br>'
+            value += f'[INDICATION] {helper.accessory_information[opcode]}: {helper.callbacks[opcode](data)}<br><br>'
         except Exception as e:
             value += f"ERROR while interpreting {opcode}: {e}<br><br>"
     elif opcode == opcodes.COMMAND_RESPONSE:
         value += '[INDICATION] '+ helper.command_response_handler(data) + '<br><br>'
     elif opcode == opcodes.GET_SERIAL_NUMBER_RESPONSE:
         value += 'Serial Number Lookup URL (open in browser): '+helper.serial_number_handler(data) + '<br><br>'
-    indication[0] += value
+    print(value)
+    with mutex:
+        indication[0] += value
 
 def callback(device, advertisement_data):
     if device not in devices:
@@ -97,6 +104,9 @@ async def search():
             except KeyboardInterrupt:
                 data += "Disconnecting and exiting program<br><br>"
                 await client.disconnect()
+            await asyncio.sleep(15)
+            data += indication[0]
+            indication[0] = ''
     except Exception as e:
         data += f"ERROR: Could not connect to {address}, {e}<br><br>"
     return jsonify({'data': data})
@@ -112,27 +122,30 @@ async def button_click():
             data += f"Connected to device {addresses[0]}<br><br>"
             await client.start_notify(UUID, indication_handler)
             await asyncio.sleep(3)
+            try:
+                if button_id == "button1":
+                    opcode_in_bytes = opcodes.SOUND_START.to_bytes(
+                        2, 'big')
+                    await client.write_gatt_char(UUID, opcode_in_bytes, response=True)
+                elif button_id == "button2":
+                    opcode_in_bytes = opcodes.SOUND_STOP.to_bytes(
+                        2, 'big')
+                    await client.write_gatt_char(UUID, opcode_in_bytes, response=True)
+                elif button_id == "button3":
+                    opcode_in_bytes = opcodes.GET_SERIAL_NUMBER.to_bytes(
+                        2, 'big')
+                    await client.write_gatt_char(UUID, opcode_in_bytes, response=True)
+                await asyncio.sleep(5)
+                print("Indication", indication[0])
+                data += indication[0]
+                indication[0] = ''
+                print(flush=True)
+            except Exception as e:
+                data += "\nError while executing operation: "+e+'<br><br>'
     except Exception as e:
         data += f"\nERROR: Could not connect to address, {e}"
-        return jsonify({'data': data})
-    try:
-        if button_id == "button1":
-            opcode_in_bytes = opcodes.SOUND_START.to_bytes(
-                2, 'big')
-            await client.write_gatt_char(UUID, opcode_in_bytes, response=True)
-        elif button_id == "button2":
-            opcode_in_bytes = opcodes.SOUND_STOP.to_bytes(
-                2, 'big')
-            await client.write_gatt_char(UUID, opcode_in_bytes, response=True)
-        elif button_id == "button3":
-            opcode_in_bytes = opcodes.GET_SERIAL_NUMBER.to_bytes(
-                2, 'big')
-            await client.write_gatt_char(UUID, opcode_in_bytes, response=True)
-        await asyncio.sleep(15)
-        data += indication[0]
-        print(flush=True)
-    except Exception as e:
-       data += "\nError while executing operation: "+e+'<br><br>'
+        # return jsonify({'data': data})
+    
     return jsonify({'data': data})
 
 if __name__ == '__main__':
