@@ -13,7 +13,7 @@ This is a CLI simulation of the DULT application which interacts with the unwant
 
 ### Functionality
 
-![WhatsApp Image 2023-10-18 at 19 40 23](https://github.com/dult-prototype/client/assets/78913321/cd0940f9-489f-4c1d-bb88-e0b571d767aa)
+![WhatsApp Image 2023-11-08 at 14 18 41](https://github.com/dult-prototype/client/assets/78913321/aa5b2181-ea87-461e-b54a-1556fcb24a32)
 1. The app scans for nearby bluetooth devices and displays a list. The user can connect to any device. (We assume the device connected to is an unwanted tracker and implements the GATT operations specified in the draft, otherwise the app simply returns an error).
 2. The app initially requests from the accessory (server) its Prouct Data, Manufacturer Name, Model Name, Accessory Category and Accessory Capability.
 3. These details requested are returned in the form of the indications and are displayed appropriately.
